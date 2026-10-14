@@ -3,7 +3,7 @@
 Milestones land in order; each task is one pull request on an
 `orun/BS-n-<slug>` branch with an `Orun-Task: BS-n` trailer.
 
-## BS0 — the spec
+## BS0 — the spec ✅
 
 This doc set, `epic.yaml` and the task contracts, merged to `main`.
 
@@ -11,7 +11,7 @@ This doc set, `epic.yaml` and the task contracts, merged to `main`.
 - the five documents and `epic.yaml` are on `main`
 - `tasks/BS-1.TaskContract.yaml`, `BS-2`, `BS-3` exist
 
-## BS1 — the blog on Workers
+## BS1 — the blog on Workers ✅
 
 `apps/web` is the upstream template with the Workers build around it;
 `tests/web` exercises the posts loader and the markdown renderer.
@@ -21,7 +21,7 @@ This doc set, `epic.yaml` and the task contracts, merged to `main`.
 - `.open-next/worker.js` and `.open-next/assets/` exist after the build
 - `wrangler dev` (via `pnpm --filter @app/web preview`) answers `/` with the hero post and `/posts/hello-world` with the post body
 
-## BS2 — ready to instantiate
+## BS2 — ready to instantiate ✅
 
 The README explains the port and how to run, test, preview and deploy it;
 `IMPLEMENTATION-STATUS.md` records what shipped and every departure.

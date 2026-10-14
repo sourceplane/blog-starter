@@ -8,7 +8,7 @@ The upstream code stays the code. The port adds the Workers build (`@opennextjs/
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | ✅ Shipped — BS0–BS2 landed (#1, #2, #3) |
 | Cluster | **BS** (BS0–BS2) |
 | Owner(s) | `apps/web` (the site) · `tests/web` (the posts-loader tests) |
 | Builds on | `cirrus-baseline` conventions (intent, components, `checks.yml` gate, gated `ci.yml`) — no bounded context of the fleet is needed |
@@ -16,7 +16,7 @@ The upstream code stays the code. The port adds the Workers build (`@opennextjs/
 | Changes | Adds the Workers build, the monorepo wrapper, tests and the deploy contract; the template's components, styles, posts and loader are untouched |
 | Decisions locked | (1) OpenNext on Workers + Static Assets, not Pages. (2) Posts are pre-rendered; `dynamicParams = false`. (3) No infra root: the site binds nothing. |
 | Gate | BS1 is the first user-visible rung (the site serves from a Worker). |
-| Shipped as | |
+| Shipped as | `main` after [#3](https://github.com/sourceplane/blog-starter/pull/3); verified locally under `wrangler dev`, deploy gated until a workspace is linked |
 
 ## Read order
 
