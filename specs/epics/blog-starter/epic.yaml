@@ -9,7 +9,7 @@ metadata:
 spec:
   title: "Vercel's Next.js Blog Starter on Cloudflare Workers"
   summary: "The Vercel blog-starter template — Markdown posts in `_posts`, statically generated with Next.js — runs unchanged in substance on Cloudflare Workers + Static Assets through @opennextjs/cloudflare, inside the Cirrus baseline's repository conventions (Orun intent and components, credential-free checks, a gated Orun CI, one epic per repository). It is the Cloudflare-only content-site port the coverage analysis ranks first."
-  state: backlog
+  state: completed
   milestones:
     - name: "BS0 — the spec"
       exitCriteria:
