@@ -1,0 +1,15 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+spec:
+  goal: The upstream blog-starter runs on Cloudflare Workers + Static Assets with green checks
+  affects:
+    - apps/web
+    - tests/web
+    - pnpm-lock.yaml
+    - package.json
+    - turbo.json
+  doneWhen:
+    - pnpm typecheck, lint, test and build are green in Checks
+    - the OpenNext worker serves the home page and every post under wrangler dev
+  gates:
+    - checks
