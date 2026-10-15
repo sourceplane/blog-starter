@@ -8,8 +8,8 @@ The upstream code stays the code. The port adds the Workers build (`@opennextjs/
 
 | Field | Value |
 |-------|-------|
-| Status | ✅ Shipped — BS0–BS2 landed (#1, #2, #3) |
-| Cluster | **BS** (BS0–BS2) |
+| Status | 🟡 BS0–BS2 shipped (#1–#3); BS3 — a baseline — in review |
+| Cluster | **BS** (BS0–BS3) |
 | Owner(s) | `apps/web` (the site) · `tests/web` (the posts-loader tests) |
 | Builds on | `cirrus-baseline` conventions (intent, components, `checks.yml` gate, gated `ci.yml`) — no bounded context of the fleet is needed |
 | Upstream | [vercel/next.js `examples/blog-starter`](https://github.com/vercel/next.js/tree/canary/examples/blog-starter) |
@@ -32,3 +32,4 @@ The upstream code stays the code. The port adds the Workers build (`@opennextjs/
 | BS0 — the spec | this doc set and the task contracts | merged on `main` |
 | BS1 — the blog on Workers | `apps/web` built by OpenNext, `tests/web`, green checks | `wrangler dev` serves every page from the worker; Checks green |
 | BS2 — ready to instantiate | README, as-built status | a reader can run, test, preview and deploy it |
+| BS3 — a baseline | card, build document, rename, bootstrap tooling, tests — ported from portfolio-starter-kit's PK3 and PK-5 | a new site goes from nothing to live in three phases; Baseline CI green |

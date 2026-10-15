@@ -52,10 +52,21 @@ spec:
     workersDevSubdomain: your-workers-subdomain
 
     installCommand: pnpm install --frozen-lockfile
-    buildCommand: pnpm exec turbo run build --filter=@app/web
+    # The site's public origin (metadataBase: the posts' Open Graph images are
+    # absolute): the environment's SITE_URL when intent.yaml sets one (a custom
+    # domain), else its workers.dev URL. The subdomain is written out rather
+    # than read from ${WORKERS_DEV_SUBDOMAIN}: the composition exports that to
+    # the smoke step only, so the build saw it empty and baked
+    # `https://<worker>-<env>..workers.dev` into every absolute link.
+    # ${ORUN_ENVIRONMENT} the runner sets for every step.
+    buildCommand: NEXT_PUBLIC_SITE_URL="${SITE_URL:-https://blog-starter-web-${ORUN_ENVIRONMENT}.your-workers-subdomain.workers.dev}" pnpm exec turbo run build --filter=@app/web
 
-    # Smoke: the home page renders and carries the app's marker text.
-    smokeCommand: "html=$(curl -sfL \"${DEPLOYED_URL}/\") && echo \"${html}\" | grep -q 'Blog'"
+    # Smoke: the home page renders the site (a link to a post — not the
+    # site's name, which is the owner's to change and HTML-escaped when it
+    # carries an `&` or `'`), and a post renders from the pre-rendered set.
+    # Each response is buffered before grep so an early match cannot SIGPIPE
+    # curl.
+    smokeCommand: "html=$(curl -sfL \"${DEPLOYED_URL}/\") && echo \"${html}\" | grep -q 'href=\"/posts/' && post=$(curl -sfL \"${DEPLOYED_URL}/posts/hello-world\") && echo \"${post}\" | grep -q '<article'"
   labels:
     team: platform
     layer: delivery

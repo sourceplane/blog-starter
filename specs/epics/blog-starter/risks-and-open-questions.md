@@ -34,3 +34,15 @@ which breaks upstream's `typeof localStorage !== "undefined"` check at
 prerender. The theme switcher now also checks `typeof localStorage.getItem
 === "function"`. CI builds on Node 22, where the global is absent; the extra
 check keeps a local build on a newer Node green.
+
+## BS-F — Not yet proven live (OPEN)
+
+BS3 is proven offline: the contract tests, the leak gate, the offline
+bootstrap and the end-to-end tier (built, dry-deployed, served under
+`wrangler dev`, smoked) are green. Nothing short of a bootstrap against a
+workspace proves the platform's half — the repository created, the brokered
+Cloudflare token minted, the deploy and the workers.dev probes. The registry
+row stays `unlisted` until one has run end to end, and `expectedMinutes` is
+the card's estimate until then. portfolio-starter-kit's first live bootstrap
+found two failures its offline tiers missed (its risks PK-J and PK-K); both
+fixes are carried here, and the tests that now reproduce them came with them.
