@@ -1,5 +1,5 @@
 import Container from "@/app/_components/container";
-import { EXAMPLE_PATH } from "@/lib/constants";
+import { SOURCE_URL } from "@/lib/site";
 
 export function Footer() {
   return (
@@ -17,7 +17,7 @@ export function Footer() {
               Read Documentation
             </a>
             <a
-              href={`https://github.com/vercel/next.js/tree/canary/examples/${EXAMPLE_PATH}`}
+              href={SOURCE_URL}
               className="mx-3 font-bold hover:underline"
             >
               View on GitHub

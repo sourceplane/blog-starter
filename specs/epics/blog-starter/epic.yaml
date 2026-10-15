@@ -9,7 +9,7 @@ metadata:
 spec:
   title: "Vercel's Next.js Blog Starter on Cloudflare Workers"
   summary: "The Vercel blog-starter template — Markdown posts in `_posts`, statically generated with Next.js — runs unchanged in substance on Cloudflare Workers + Static Assets through @opennextjs/cloudflare, inside the Cirrus baseline's repository conventions (Orun intent and components, credential-free checks, a gated Orun CI, one epic per repository). It is the Cloudflare-only content-site port the coverage analysis ranks first."
-  state: completed
+  state: started
   milestones:
     - name: "BS0 — the spec"
       exitCriteria:
@@ -26,3 +26,9 @@ spec:
         - "the README says how to run, test, preview and deploy it through Orun"
         - "the as-built status records every departure from the upstream template"
       tasks: [BS-3]
+    - name: "BS3 — a baseline"
+      exitCriteria:
+        - "blueprint.yaml (the console card) and repo-blueprint.yaml (the build) take a new site from nothing to live on stage and prod in three phases"
+        - "a site built from it carries the site only, renamed throughout to its own name, repository and Worker"
+        - "Baseline CI is green: contract tests, the blueprint read by the pinned orun, the leak gate, the offline bootstrap and the end-to-end tier"
+      tasks: [BS-4]
