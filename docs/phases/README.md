@@ -7,11 +7,16 @@ no umbrella workflow and no per-phase document: a phase is a selection on one
 artifact, which is what makes running one alone, months later, from a fresh
 container the same operation as running them all.
 
-Each phase follows the same contract:
+Each phase lands one pull request, checked in the box first; the deploying
+phase, `02-site`, follows the whole contract:
 
-> **place its modules → brand them → land them as one pull request → watch
-> the convergence that merge triggers (auto-resumed) → verify the outcome
-> over HTTP.**
+> **place its modules → brand them → check them in the box and land them as
+> one pull request → watch the convergence that merge triggers
+> (auto-resumed) → verify the outcome over HTTP.**
+
+The run's task set-up — the epic, a milestone per phase, a task per landing
+— runs in the background from the start; the first hook that needs it, the
+phase's `task`, waits for it.
 
 Run from the baseline checkout (the blueprint's source is `path: .`); the
 site's repository is wherever `--out` points.
@@ -23,15 +28,20 @@ states it in the document: the engine refuses a phase whose predecessor is not
 placed, and names it.
 
 Every landing is a pull request on a branch named for its task
-(`orun/BASE-<n>-<phase>`). On those branches `ci.yml` runs `plan` only — the
-intent, every component and every composition resolve — and skips the lanes,
+(`orun/BASE-<n>-<phase>`), checked before it is pushed: `orun validate`, then
+`orun plan` as the pull request and as the merge would plan it, in the box,
+in under a second (`checks: local`). Then it merges; nothing waits for the
+PR's CI. On those branches `ci.yml` runs `plan` only and skips the lanes,
 because the merge runs them on main a minute later, for real, and that
-convergence is what the phase watches. `checks.yml` (install, typecheck, lint,
-test, build) runs on every pull request regardless.
+convergence is what the phase watches. The site carries no other workflow:
+the baseline's own CI (Tier 2) installs, renders the fixtures, type-checks,
+lints, tests and builds the scaffold's landing and the finished site before a
+tag is cut, and every later pull request in the site runs `ci.yml`'s verify
+lanes.
 
 | phase | lands | verified by |
 |---|---|---|
-| [`01-scaffold`](01-scaffold.md) | **the GitHub repo created** and born: intent, CI, tooling, identity | repo pushed, workspace-linked, its PR's checks green |
+| [`01-scaffold`](01-scaffold.md) | **the GitHub repo created** and born: intent, CI, tooling, identity | repo pushed, workspace-linked, its commit checked in the box and merged |
 | [`02-site`](02-site.md) | `apps/web` + `tests/web`, deployed to stage and prod side by side | convergence green (build, deploy, smoke) + both URLs answer |
 | [`03-docs`](03-docs.md) | the live-deployment record; the promotion gate and dev lanes put back | committed manifest matches probed reality |
 
@@ -82,14 +92,18 @@ its `post` hooks make them the site's:
    those components.
 2. `rebrand` → `rebrand --verify` — the identity rename over the whole tree,
    then a sweep that fails on any of this baseline's identity left behind.
-3. `pnpm install --lockfile-only` from the baseline's complete lockfile —
-   pruned to the projects placed so far, so `--frozen-lockfile` installs
-   pass.
+
+The baseline's complete lockfile ships as it is, with `01-scaffold`: it
+carries no identity, and the projects it names that are not placed yet are
+the ones `02-site` places — a frozen install accepts it at every landing. The
+lanes install it with `--frozen-lockfile`, as the baseline's own CI does on
+the scaffold's landing and on the finished site before a tag.
 
 ## When a phase fails
 
 - **Before it lands** (a probe that timed out, a rebrand residue, a refused
-  link): nothing was merged. Fix what the message names and re-run the phase.
+  link, a tree the landing's own `orun plan` refuses): nothing was merged.
+  Fix what the message names and re-run the phase.
 - **After it lands** (the convergence went red): the files are on main.
   `orun.run/watch@v1` has already resumed the run up to three times. Re-run
   the phase (`--phase 02-site`, `--redo 02-site` under `--resume`, or the

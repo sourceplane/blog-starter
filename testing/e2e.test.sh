@@ -4,12 +4,17 @@
 # placement.test.sh proves the tree a bootstrap ends with is the right tree.
 # This proves it WORKS, by doing to it what its own pipelines will:
 #
-#   1. at the 01-scaffold landing (the commit its first PR merges), run what
-#      `checks.yml` runs on that PR — install with the lockfile the phase
-#      pruned, render fixtures, typecheck, lint, test, build. That landing
-#      WAITS on its checks, so a scaffold they refuse is a bootstrap that never
-#      gets past phase one;
-#   2. at the finished site, the same Checks sequence;
+#   1. at the 01-scaffold landing (the commit its first PR merges), the
+#      landing's own checks — install with the lockfile the site ships (the
+#      complete one, ahead of the projects 02-site places), render fixtures,
+#      typecheck, lint, test, build. The bootstrap's own landings are checked
+#      in the box with `orun validate` and `orun plan` alone (`checks:
+#      local`; their PR's CI on an `orun/BASE-…` branch is `plan` alone), so
+#      THIS is where a scaffold those steps refuse is caught: before the tag,
+#      not after a build has merged it;
+#   2. at the finished site, the same checks. Every later pull request of the
+#      site runs ci.yml's verify lanes, which build and dry-deploy it; the
+#      lint and the tests run here, and by hand before a push;
 #   3. the stage lane's own steps, rendered by `orun plan` in the site: on a
 #      pull request (the verify profile) `build-app` — the component's
 #      buildCommand, origin and all, the same step the deploy profile runs —
@@ -64,24 +69,25 @@ repo="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['reponame
 sub="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['subdomain'])" "$values")"
 export CI=1 WRANGLER_SEND_METRICS=false NEXT_TELEMETRY_DISABLED=1 TURBO_TELEMETRY_DISABLED=1
 
-# What checks.yml runs, step for step, read out of the workflow the site
-# carries so the two cannot drift: every `run:` of its one job, in order.
+# The landing's own checks, step for step, run here at once on the whole
+# tree. A pull request in the site builds and dry-deploys it through ci.yml's
+# lanes; the lint and the tests run here, and by hand before a push.
+LANDING_CHECKS=(
+  "pnpm install --frozen-lockfile"
+  "pnpm run wire:fixture"
+  "pnpm typecheck"
+  "pnpm lint"
+  "pnpm test"
+  "pnpm build"
+)
 checks() { # DIR LOG
   local dir="$1" log="$2" cmd
-  while IFS= read -r cmd; do
+  for cmd in "${LANDING_CHECKS[@]}"; do
     echo "   \$ $cmd" | tee -a "$log"
     if ! (cd "$dir" && bash -c "$cmd") >> "$log" 2>&1; then
       echo "FAIL: \`$cmd\` failed in $dir" >&2; tail -40 "$log" >&2; return 1
     fi
-  done < <(python3 - "$dir/.github/workflows/checks.yml" <<'PY'
-import sys, yaml
-wf = yaml.safe_load(open(sys.argv[1]))
-for job in wf["jobs"].values():
-    for step in job["steps"]:
-        if "run" in step:
-            print(step["run"].strip())
-PY
-)
+  done
 }
 
 echo "── the offline bootstrap (testing/lib/bootstrap.sh)"
@@ -91,12 +97,12 @@ bootstrap_offline "$root" "$tree" "$values" "$scratch/logs" > "$scratch/bootstra
 echo "   3 phases placed and landed"
 
 # ── 1. the scaffold's own pull request ─────────────────────────────────────
-echo "── 01-scaffold's landing, under the checks its PR waits on"
+echo "── 01-scaffold's landing: install, the fixture render, typecheck, lint, test, build"
 git -C "$tree" worktree add -q "$scratch/at-01" "$(git -C "$tree" rev-parse HEAD~2)"
 checks "$scratch/at-01" "$scratch/checks-01.log"
 
 # ── 2. the finished site ───────────────────────────────────────────────────
-echo "── the finished site, under the same checks"
+echo "── the finished site: the same checks"
 checks "$tree" "$scratch/checks-site.log"
 
 # ── 3. the deploy lane's steps, for stage ──────────────────────────────────
