@@ -9,6 +9,7 @@ the code departed from `design.md` or from the upstream template.
 | BS1 — the blog on Workers | ✅ Shipped | [#2](https://github.com/sourceplane/blog-starter/pull/2) |
 | BS2 — ready to instantiate | ✅ Shipped | [#3](https://github.com/sourceplane/blog-starter/pull/3) |
 | BS3 — a baseline | 🟡 In review | this PR |
+| The subdomain from the connection (risk BS-G) | 🟡 In review | this PR |
 
 ## Departures from the upstream template
 
