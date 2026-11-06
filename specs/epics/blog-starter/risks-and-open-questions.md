@@ -63,3 +63,13 @@ its pattern (fixed in the console, sourceplane/orun-cloud). The card now reads
 the value from the Cloudflare connection, as portfolio-starter-kit's does, so
 there is no box to get wrong. The CLI build that proved BS-F passed the right
 value by hand, which is why it did not find this.
+
+## BS-H — 03-docs needs PyYAML the build box lacks (RESOLVED)
+
+`hooks/render-deployment-docs.sh` imported `yaml` to read `SITE_URL` from
+`intent.yaml`. The build box has python3 but not PyYAML, so the import failed
+with exit 1 and no message. The first console build to reach 03-docs
+(2026-11-06) stopped there with its site live on stage and prod; local and CLI
+runs had PyYAML and passed. The hook now uses PyYAML when present and reads that
+one key by indentation otherwise. `testing/render.test.sh` runs it under a
+python3 with no third-party packages.
